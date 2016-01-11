@@ -4,7 +4,7 @@ using System.Collections;
 public class LinePath : MonoBehaviour {
     public GameObject startAnchor;
     public GameObject endAnchor;
-    public float lineWidth;
+    public float lineWidth = 1f;
     public MeshFilter meshComponent;
 
     void Start()
