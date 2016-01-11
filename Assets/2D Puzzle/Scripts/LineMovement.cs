@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class LineMovement : MonoBehaviour {
     public Camera cam;
@@ -9,11 +10,11 @@ public class LineMovement : MonoBehaviour {
     public Vector3 forwardOffset;
     private Vector3 mousePosLast;
     private float lerpDist;
+    private Stack<PathNode> travelPath;
     
 	void Start () {
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = false;
         mousePosLast = MouseScreenToWorldPoint();
+        travelPath = new Stack<PathNode>();
 	}
 	
 	void Update () {
@@ -48,15 +49,18 @@ public class LineMovement : MonoBehaviour {
 
     void GetNewPath(PathNode pathNode)
     {
-        Debug.Log("Getting new path");
-        //TODO: determine anchorB
+        //pop the node we're at off the travel stack if it's on it (gets readded later so long as we're not doubling back)
+        if (travelPath.Count > 0 && travelPath.Peek() == pathNode) travelPath.Pop();
+
+        //determine best neighbor to path to next based on mouse delta
         Vector3 mouseDelta = MouseScreenToWorldPoint() - mousePosLast;
         PathNode bestNeighbor = pathNode.neighbors[0];
         float mouseDeltaDotBest = -2f;
+
         foreach (PathNode neighbor in pathNode.neighbors)
         {
             float curDotPath = Vector2.Dot(mouseDelta.normalized, (neighbor.transform.position - pathNode.transform.position).normalized);
-            Debug.Log(curDotPath);
+            
             if (curDotPath > mouseDeltaDotBest)
             {
                 bestNeighbor = neighbor;
@@ -64,9 +68,20 @@ public class LineMovement : MonoBehaviour {
             }
         }
 
+        //set node's visited status
+        //if best neighbor isn't part of travel path then add this node to travel path and set as traveled
+        if (!(travelPath.Count > 0 && travelPath.Peek() == bestNeighbor))
+        {
+            pathNode.SetVisted(true);
+            travelPath.Push(pathNode);
+        }
+        //if best neighbor is part of travel path then we're backtracking.
+        else pathNode.SetVisted(false);
+
+        //set new path anchors
         anchorA = pathNode.gameObject.transform;
         anchorB = bestNeighbor.gameObject.transform;
-        if (lerpDist > pathNode.snapRadius / Vector2.Distance(anchorA.position, anchorB.position) ) lerpDist = 0f;
+        if (lerpDist > pathNode.snapRadius / Vector2.Distance(anchorA.position, anchorB.position)) lerpDist = 0f;
     }
 
     Vector3 MouseScreenToWorldPoint()
