@@ -49,6 +49,9 @@ public class LineMovement : MonoBehaviour {
 
     void GetNewPath(PathNode pathNode)
     {
+        //if we're trying to get a new path at a visited node that isn't the last one we visited, we're trying to crossover and should stop.
+        if (pathNode.IsVisited() && travelPath.Count > 0 && travelPath.Peek() != pathNode) return;
+
         //pop the node we're at off the travel stack if it's on it (gets readded later so long as we're not doubling back)
         if (travelPath.Count > 0 && travelPath.Peek() == pathNode) travelPath.Pop();
 
