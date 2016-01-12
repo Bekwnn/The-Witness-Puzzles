@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class LineMovement : MonoBehaviour {
+    public NodePuzzle puzzle;
     public Camera cam;
     public GameObject movementPlane;
     public Transform anchorA;
     public Transform anchorB;
     public Vector3 forwardOffset;
+
     private Vector3 mousePosLast;
     private float lerpDist;
     private Stack<PathNode> travelPath;
@@ -57,10 +59,11 @@ public class LineMovement : MonoBehaviour {
 
         //determine best neighbor to path to next based on mouse delta
         Vector3 mouseDelta = MouseScreenToWorldPoint() - mousePosLast;
-        PathNode bestNeighbor = pathNode.neighbors[0];
+        List<PathNode> neighbors = puzzle.GetNeighborsOf(pathNode);
+        PathNode bestNeighbor = neighbors[0];
         float mouseDeltaDotBest = -2f;
 
-        foreach (PathNode neighbor in pathNode.neighbors)
+        foreach (PathNode neighbor in neighbors)
         {
             float curDotPath = Vector2.Dot(mouseDelta.normalized, (neighbor.transform.position - pathNode.transform.position).normalized);
             

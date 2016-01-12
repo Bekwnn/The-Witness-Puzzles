@@ -5,7 +5,8 @@ public class LinePath : MonoBehaviour {
     public GameObject startAnchor;
     public GameObject endAnchor;
     public float lineWidth = 1f;
-    public MeshFilter meshComponent;
+
+    [HideInInspector] public MeshFilter meshComponent;
 
     void Start()
     {
