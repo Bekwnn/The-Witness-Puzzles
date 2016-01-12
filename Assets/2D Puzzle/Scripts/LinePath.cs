@@ -43,4 +43,9 @@ public class LinePath : MonoBehaviour {
         meshComponent.mesh.RecalculateBounds();
         meshComponent.mesh.Optimize();
     }
+
+    public void Refresh()
+    {
+        Update();
+    }
 }

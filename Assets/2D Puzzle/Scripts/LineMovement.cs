@@ -9,6 +9,8 @@ public class LineMovement : MonoBehaviour {
     public Transform anchorA;
     public Transform anchorB;
     public Vector3 forwardOffset;
+    public LinePath nearTrail;
+    public float mouseSensitivity = 1f;
 
     private Vector3 mousePosLast;
     private float lerpDist;
@@ -30,6 +32,7 @@ public class LineMovement : MonoBehaviour {
     void UpdateLerpDist()
     {
         Vector3 mouseDelta = MouseScreenToWorldPoint() - mousePosLast;
+        mouseDelta *= mouseSensitivity;
 
         float movement = Vector2.Dot(mouseDelta, (anchorA.position - anchorB.position).normalized);
         lerpDist -= ((anchorA.position - anchorB.position).normalized / Vector2.Distance(anchorA.position, anchorB.position)).magnitude * movement;
@@ -79,10 +82,30 @@ public class LineMovement : MonoBehaviour {
         if (!(travelPath.Count > 0 && travelPath.Peek() == bestNeighbor))
         {
             pathNode.SetVisted(true);
+
+            if (travelPath.Count > 0)
+            {
+                Edge e = puzzle.GetEdge(pathNode, travelPath.Peek());
+                e.line.GetComponent<MeshRenderer>().material = puzzle.lineVisitedMat;
+            }
+            nearTrail.startAnchor = pathNode.gameObject;
+
             travelPath.Push(pathNode);
         }
         //if best neighbor is part of travel path then we're backtracking.
-        else pathNode.SetVisted(false);
+        else
+        {
+            pathNode.SetVisted(false);
+
+            if (travelPath.Count > 0)
+            {
+                Edge e = puzzle.GetEdge(pathNode, travelPath.Peek());
+                e.line.GetComponent<MeshRenderer>().material = puzzle.lineUnvisitedMat;
+                nearTrail.startAnchor = travelPath.Peek().gameObject;
+            }
+            else nearTrail.startAnchor = gameObject;
+        }
+        nearTrail.Refresh();
 
         //set new path anchors
         anchorA = pathNode.gameObject.transform;

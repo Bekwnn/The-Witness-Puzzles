@@ -13,7 +13,7 @@ public class NodePuzzle : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         edges = new List<Edge>();
         GetComponents(edges);
 
@@ -28,9 +28,9 @@ public class NodePuzzle : MonoBehaviour {
             e.line.startAnchor = e.anchorA.gameObject;
             e.line.endAnchor = e.anchorB.gameObject;
         }
-	}
-	
-	
+    }
+
+
     public List<PathNode> GetNeighborsOf(PathNode main)
     {
         List<PathNode> retList = new List<PathNode>();
@@ -46,5 +46,15 @@ public class NodePuzzle : MonoBehaviour {
             }
         }
         return retList;
+    }
+
+    public Edge GetEdge(PathNode a, PathNode b)
+    {
+        foreach (Edge e in edges)
+        {
+            if ((e.anchorA == a && e.anchorB == b) || (e.anchorA == b && e.anchorB == a))
+                return e;
+        }
+        return null;
     }
 }
