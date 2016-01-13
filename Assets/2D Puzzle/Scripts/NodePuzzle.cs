@@ -8,6 +8,8 @@ public class NodePuzzle : MonoBehaviour {
     public Material nodeVisitedMat;
     public Material nodeUnvisitedMat;
 
+    public FlashMat lineWarning;
+
     public List<PathNode> vertices;
     [HideInInspector] public List<Edge> edges;
 
@@ -56,5 +58,10 @@ public class NodePuzzle : MonoBehaviour {
                 return e;
         }
         return null;
+    }
+
+    void Update()
+    {
+
     }
 }
